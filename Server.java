@@ -19,6 +19,7 @@ public class Server{
         PrintWriter out = new PrintWriter(clientSocket.getOutputStream(),true);
 
         //*** Application Protocol *****
+        //****************************** */
         String buffer = in.readLine();
         while(!(buffer.equals("quit"))){
             out.println("From Server: " + buffer);
