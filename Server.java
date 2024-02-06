@@ -1,9 +1,9 @@
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.io.OutputStream;
 
 public class Server{
     private ServerSocket serverSocket;
@@ -16,15 +16,24 @@ public class Server{
 
     private void processConnection() throws IOException{
         BufferedReader in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
-        PrintWriter out = new PrintWriter(clientSocket.getOutputStream(),true);
+        OutputStream out = clientSocket.getOutputStream();
 
         //*** Application Protocol *****
         //****************************** */
-        String buffer = in.readLine();
-        while(!(buffer.equals("quit"))){
-            out.println("From Server: " + buffer);
-            buffer = in.readLine();
+
+        String buffer = "";
+        String line;
+
+
+        while((line = in.readLine()) != null ){
+            if(line.equalsIgnoreCase("quit") || line.equals("")){
+                break;
+            }
+
+            buffer += line+"\n";
+
         }
+        System.out.println(buffer);
        
         in.close();
         out.close();
