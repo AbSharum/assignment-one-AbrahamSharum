@@ -3,6 +3,9 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.Date;
+
+
 import java.io.OutputStream;
 
 public class Server{
@@ -17,6 +20,7 @@ public class Server{
     private void processConnection() throws IOException{
         BufferedReader in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
         OutputStream out = clientSocket.getOutputStream();
+
 
         //*** Application Protocol *****
         //****************************** */
@@ -34,7 +38,16 @@ public class Server{
 
         }
         System.out.println(buffer);
-       
+        byte[] data = buffer.getBytes();
+        String response = 
+        "HTTP/1.1 200 OK" + "\r\n" +
+        "Date: " + new Date() + "\r\n" +
+        "Content-Type: text/html" + "\r\n" + 
+        "Content-Length: " + (data.length) + "\r\n" +
+        "Last-Modified : ";
+        
+        out.write(response.getBytes());
+        System.out.print(response);
         in.close();
         out.close();
     }
