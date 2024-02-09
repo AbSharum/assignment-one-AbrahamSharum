@@ -41,26 +41,34 @@ public class Server {
 
         String filePath = buffer.split(" ")[1]; 
 
-        if (filePath.equals("/")) {
-            filePath = "/home.html";
-        }
+        try
+        {
+            if (filePath.equals("/")) {
+                filePath = "/home.html";
+            }
+            
+            byte[] file = Files.readAllBytes(Paths.get(System.getProperty("user.dir")+"\\docroot"+filePath));
+            String response = 
+            "HTTP/1.1 200 OK" + "\r\n" +
+            "Date: " + new Date() + "\r\n" +
+            "Content-Type: text/html" + "\r\n" + 
+            "Content-Length: " + (file.length) + "\r\n" +
+            "Connection: close\r\n\r\n";
 
-        byte[] file = Files.readAllBytes(Paths.get(System.getProperty("user.dir")+"\\docroot"+filePath));
-
-        String response = 
-        "HTTP/1.1 200 OK" + "\r\n" +
-        "Date: " + new Date() + "\r\n" +
-        "Content-Type: text/html" + "\r\n" + 
-        "Content-Length: " + (file.length) + "\r\n" +
-        "Connection: close\r\n\r\n";
-
-        out.write(response.getBytes());
-        out.write(file);
-        out.write("\r\n".getBytes());
-        out.flush();
+            out.write(response.getBytes());
+            out.write(file);
+            out.write("\r\n".getBytes());
+            out.flush();
                 
-        in.close();
-        out.close();
+            in.close();
+            out.close();
+
+        }catch(IOException e){
+            byte[] errorFile = Files.readAllBytes(Paths.get(System.getProperty("user.dir")+"\\docroot\\404.html"));
+            out.write(("HTTP/1.1 404: File Not Found").getBytes());
+            out.write(("\r\n\r\n").getBytes());
+            out.write(errorFile);
+        }
     }
 
     public void run() throws IOException {
