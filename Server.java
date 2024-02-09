@@ -45,7 +45,7 @@ public class Server {
                 filePath = "/home.html";
             }
             
-            byte[] file = Files.readAllBytes(Paths.get(System.getProperty("user.dir")+"\\docroot"+filePath));
+            byte[] file = Files.readAllBytes(Paths.get(System.getProperty("user.dir")+"/docroot"+filePath));
             String response = 
             "HTTP/1.1 200 OK" + "\r\n" +
             "Date: " + new Date() + "\r\n" +
@@ -62,7 +62,7 @@ public class Server {
             out.close();
 
         }catch(IOException e){
-            byte[] errorFile = Files.readAllBytes(Paths.get(System.getProperty("user.dir")+"\\docroot\\404.html"));
+            byte[] errorFile = Files.readAllBytes(Paths.get(System.getProperty("user.dir")+"/docroot/404.html"));
             out.write(("HTTP/1.1 404: File Not Found").getBytes());
             out.write(("\r\n\r\n").getBytes());
             out.write(errorFile);
