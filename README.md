@@ -27,3 +27,28 @@ The starter files, Server.java, implements a simple echo server.  This provides 
 
 **Refer to the [Mozilla Developer Network MDN HTTP Documentation] (https://developer.mozilla.org/en-US/docs/Web/HTTP) and the [HTTP Wikipedia page](https://en.wikipedia.org/wiki/HTTP) for HTTP/1.1 Request and Response headers and formatting guidelines.**
 
+---
+
+## Implementation Notes
+
+`Server.java` is a small single-threaded TCP server built directly on `java.net.ServerSocket` (no external libraries/frameworks). What it actually does:
+
+- Listens on **port 8080** (hardcoded in `main`).
+- Accepts one client connection at a time (`serverSocket.accept()` in a loop); each request is handled fully before the next connection is accepted — there is no threading/concurrency.
+- Reads the raw request line-by-line until it hits an empty line or the literal text `quit`, then pulls the requested path out of the first line by splitting on spaces (`GET /path HTTP/1.1` -> `/path`). Only the request line is parsed; headers are read but ignored, and there is no explicit check that the method is `GET` (any request line with a path in that position is treated as a file request).
+- Requests for `/` are mapped to `/home.html`.
+- Serves files by reading them from `<working directory>/docroot/<path>` with `Files.readAllBytes`, and responds with a `200 OK`, `Date`, `Content-Type: text/html` (always, regardless of actual file type), `Content-Length`, and `Connection: close` header, followed by the file bytes.
+- If the file can't be read (missing file, bad path, etc.) it catches the `IOException` and returns `docroot/404.html` with a bare `HTTP/1.1 404: File Not Found` status line (no other headers).
+- The `docroot/` directory contains `home.html`, `404.html`, a `favicon.ico`, and a `scripts/style.css`.
+
+### Build & Run
+
+```
+./build.sh      # runs: javac Server.java
+java Server     # starts the server on http://localhost:8080
+```
+
+Then visit `http://localhost:8080/` in a browser (serves `docroot/home.html`), or request any other path under `docroot/` (e.g. `http://localhost:8080/scripts/style.css`). Requesting a path that doesn't exist under `docroot/` returns the 404 page.
+
+**Known limitations:** only handles one connection at a time, does not distinguish HTTP methods, always sends `Content-Type: text/html` even for non-HTML assets, and does minimal/no path validation.
+
